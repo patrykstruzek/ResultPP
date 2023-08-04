@@ -87,7 +87,32 @@ namespace crabpp
             return *this;
         }
 
+        bool is_ok() const { return tag == Tag::Ok; }
+        bool is_err() const { return tag == Tag::Err; }
+
+        explicit operator bool() const { return is_ok(); }
+
         const T& ok() const { return okValue; }
         const E& err() const { return errValue; }
+        
+        /*
+        FUNCTIONS TO DO:
+        is_ok_and
+        is_err_and
+        expect
+        expect_err
+        unwrap
+        unwrap_or_default
+        unwrap_err  
+        and
+        and_then
+        or
+        or_else
+        unwrap_or
+        unwrap_or_else
+
+        Err
+        panic   
+        */
     };
 }   
