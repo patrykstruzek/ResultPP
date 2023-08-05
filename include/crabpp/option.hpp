@@ -1,40 +1,124 @@
 #include <functional>
-#include <optional>
 #include <unordered_map>
 
 namespace crabpp
 {
-// template <typename T>
-// struct Option
-// {
-//     union Tag
-//     {
-//         std::optional<T> Some;
-//         std::optional<T> None;
 
-//         Tag() : None(std::nullopt) {}
-//         Tag(T value) : Some(std::move(value)) {}
-//         ~Tag() {}
-//     };
+    // ---------- Option ----------
 
-//     Tag tag;
+    template <typename T>
+    class Option {
+    private:
+        bool hasValue;
+        T value;
 
-//     Option() : tag() {}
-//     Option(T value) : tag(std::move(value)) {}
-//     ~Option() {}
-// };
+    public:
+        Option() : hasValue(false), value(T()) {}
 
-    template<typename T>
-    void match(const T& value, const std::unordered_map<T, std::function<void()>> variants)
-    {
-        auto it = variants.find(value);
-        if (it != variants.end())
-        {
-            it->second();
+        Option(const T& val) : hasValue(true), value(val) {}
+
+        ~Option() {
+            if (hasValue) {
+                value.~T();
+            }
         }
-        else
-        {
-            std::cerr << "No matching variant found for value: " << value << std::endl;
+
+        Option(const Option& other) : hasValue(other.hasValue) {
+            if (hasValue) {
+                new (&value) T(other.value);
+            }
         }
+
+        Option& operator=(const Option& other) {
+            if (this != &other) {
+                if (hasValue) {
+                    value.~T();
+                }
+                hasValue = other.hasValue;
+                if (hasValue) {
+                    new (&value) T(other.value);
+                }
+            }
+            return *this;
+        }
+
+        Option(Option&& other) : hasValue(other.hasValue) {
+            if (hasValue) {
+                new (&value) T(std::move(other.value));
+                other.hasValue = false;
+            }
+        }
+
+        Option& operator=(Option&& other) {
+            if (this != &other) {
+                if (hasValue) {
+                    value.~T();
+                }
+                hasValue = other.hasValue;
+                if (hasValue) {
+                    new (&value) T(std::move(other.value));
+                    other.hasValue = false;
+                }
+            }
+            return *this;
+        }
+
+        bool is_some() const {
+            return hasValue;
+        }
+
+        bool is_none() const {
+            return !hasValue;
+        }
+
+        const T& unwrap() const {
+            if (!hasValue) {
+                throw std::logic_error("Option does not have a value");
+            }
+            return value;
+        }
+    };
+
+    Option<int> Some(const int& val) {
+        return Option<int>(val);
     }
+
+    Option<int> None() {
+        return Option<int>();
+    }
+
+    // ---------- match ----------
+
+    template <typename T, typename R>
+    class PatternMatcher {
+    private:
+        const T& value;
+        bool matched;
+        R result;
+
+    public:
+        PatternMatcher(const T& val) : value(val), matched(false) {}
+
+        PatternMatcher& with(const T& pattern, const std::function<R()>& action) noexcept {
+            if (!matched && value == pattern) {
+                result = action();
+                matched = true;
+            }
+            return *this;
+        }
+
+        R rest(const std::function<R()>& action) noexcept {
+            if (!matched) {
+                result = action();
+                matched = true;
+            }
+            return result;
+        }
+    };
+
+    template <typename T, typename R>
+    PatternMatcher<T, R> match(const T& value) {
+        return PatternMatcher<T, R>(value);
+    }
+
 }
