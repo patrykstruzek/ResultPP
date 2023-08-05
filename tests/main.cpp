@@ -28,25 +28,20 @@ int main()
         .with(10, []() { return 200; })
         .rest([]() { return 300; });
 
-    std::cout << result << '/n';
+    std::cout << result << '\n';
 
     int value = 42;
 
     auto result2 = match<int, Option<int>>(value)
-        .with(42, []() {
-            return Some(10);
-        })
-        .with(99, []() {
-            return Some(20);
-        })
-        .rest([]() -> Option<int> {
-            return None();
+        .with(42, []() {return Some(10);})
+        .with(99, []() {return Some(20);})
+        .rest([]() -> Option<int> {return None();
         });
 
-        std::cout << result2.unwrap() << '/n';
+        std::cout << result2.unwrap() << '\n';
 
         auto result3 = only_one(1);
 
-        std::cout << result3.unwrap() << '/n';
+        std::cout << result3.unwrap() << '\n';
 
 }
