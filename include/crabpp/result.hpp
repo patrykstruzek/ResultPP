@@ -1,100 +1,115 @@
+#pragma once
+
+#include <iostream>
+#include <variant>
+
 namespace crabpp
 {
 
-template <typename T, typename E>
-struct Result
-{
-    union Value
+    enum class RunError
     {
-        T ok;
-        E err;
-
-        Value() {}
-        ~Value() {}
+        ExitFailure
     };
 
-    enum class Tag
+    enum class StdError
     {
-        Ok,
-        Err
+        HashError,
+        CinError
     };
 
-    Tag tag;
-    Value value;
-
-    Result(const T &data) : tag(Tag::Ok)
+    enum class UserError
     {
-        new (&value.ok) T(data);
+
+    };
+
+    enum class LoginError
+    {
+        IncorrectNickname,
+        AlreadyExistingName,
+        IncorrectPassword
+    };
+
+    enum class InputError
+    {
+        InvalidInput,
+    };
+
+    enum class DbError
+    {
+        DbError,
+        OpenFailure,
+        TableCreateFailure,
+        InsertFailure,
+        SelectFailure,
+        UpdateFailure
+    };
+
+    struct None
+    {
+    };
+
+    template <typename T, typename E>
+    class Result
+    {
+    public:
+        const T &value() const { return std::get<T>(m_storage); }
+
+        const E &error() const { return std::get<E>(m_storage); }
+
+        explicit operator bool() const { return !std::holds_alternative<E>(m_storage); }
+
+    private:
+        template <typename U, typename V>
+        friend Result<U, V> Ok(const U &value);
+
+        template <typename U, typename V>
+        friend Result<U, V> Ok(U &&value);
+
+        template <typename V>
+        friend Result<None, V> Ok();
+
+        template <typename U, typename V>
+        friend Result<U, V> Error(const V &error);
+
+        template <typename U, typename V>
+        friend Result<U, V> Error(V &&error);
+
+        Result(const T &value) : m_storage(value) {}
+        Result(T &&value) : m_storage(std::move(value)) {}
+        Result(const E &error) : m_storage(error) {}
+        Result(E &&error) : m_storage(std::move(error)) {}
+        Result(None &) {}
+
+        std::variant<T, E> m_storage;
+    };
+
+    template <typename T, typename E>
+    Result<T, E> Ok(const T &value)
+    {
+        return Result<T, E>(value);
     }
 
-    Result(const E &error) : tag(Tag::Err)
+    template <typename T, typename E>
+    Result<T, E> Ok(T &&value)
     {
-        new (&value.err) E(error);
+        return Result<T, E>(std::move(value));
     }
 
-    ~Result()
+    template <typename E>
+    Result<None, E> Ok()
     {
-        if (tag == Tag::Ok)
-            value.ok.~T();
-        else
-            value.err.~E();
+        return Result<None, E>(None{});
     }
 
-    Result(const Result &other) : tag(other.tag)
+    template <typename T, typename E>
+    Result<T, E> Error(const E &error)
     {
-        if (tag == Tag::Ok)
-            new (&value.ok) T(other.value.ok);
-        else
-            new (&value.err) E(other.value.err);
+        return Result<T, E>(error);
     }
 
-    Result &operator=(const Result &other)
+    template <typename T, typename E>
+    Result<T, E> Error(E &&error)
     {
-        if (this == &other)
-            return *this;
-
-        this->~Result();
-
-        tag = other.tag;
-        if (tag == Tag::Ok)
-            new (&value.ok) T(other.value.ok);
-        else
-            new (&value.err) E(other.value.err);
-
-        return *this;
+        return Result<T, E>(std::move(error));
     }
-
-    Result(Result &&other) noexcept : tag(other.tag)
-    {
-        if (tag == Tag::Ok)
-            new (&value.ok) T(std::move(other.value.ok));
-        else
-            new (&value.err) E(std::move(other.value.err));
-    }
-
-    Result &operator=(Result &&other) noexcept
-    {
-        if (this == &other)
-            return *this;
-
-        this->~Result();
-
-        tag = other.tag;
-        if (tag == Tag::Ok)
-            new (&value.ok) T(std::move(other.value.ok));
-        else
-            new (&value.err) E(std::move(other.value.err));
-
-        return *this;
-    }
-
-    bool is_ok() const { return tag == Tag::Ok; }
-    bool is_err() const { return tag == Tag::Err; }
-
-    explicit operator bool() const { return is_ok(); }
-
-    const T& unwrap() const { return value.ok; }
-    const E& unwrap_err() const { return value.err; } 
-};
-
 }

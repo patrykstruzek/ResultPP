@@ -14,9 +14,9 @@ auto only_one(const int& value) -> Result<int, ErrorCode>
 {
     if (value != 1)
     {
-        return Result<int, ErrorCode>(ErrorCode::WRONG_VALUE);
+        return Error<int, ErrorCode>(ErrorCode::WRONG_VALUE);
     }
-    return Result<int, ErrorCode>(value);
+    return Ok<int, ErrorCode>(1);
 }
 
 int main()
@@ -42,6 +42,6 @@ int main()
 
         auto result3 = only_one(1);
 
-        std::cout << result3.unwrap() << '\n';
+        std::cout << result3.value() << '\n';
 
 }
