@@ -5,45 +5,6 @@
 
 namespace crabpp
 {
-
-    enum class RunError
-    {
-        ExitFailure
-    };
-
-    enum class StdError
-    {
-        HashError,
-        CinError
-    };
-
-    enum class UserError
-    {
-
-    };
-
-    enum class LoginError
-    {
-        IncorrectNickname,
-        AlreadyExistingName,
-        IncorrectPassword
-    };
-
-    enum class InputError
-    {
-        InvalidInput,
-    };
-
-    enum class DbError
-    {
-        DbError,
-        OpenFailure,
-        TableCreateFailure,
-        InsertFailure,
-        SelectFailure,
-        UpdateFailure
-    };
-
     struct None
     {
     };
@@ -52,64 +13,35 @@ namespace crabpp
     class Result
     {
     public:
-        const T &value() const { return std::get<T>(m_storage); }
+        const T &value() const noexcept { return std::get<T>(m_storage); }
 
-        const E &error() const { return std::get<E>(m_storage); }
+        const E &error() const noexcept { return std::get<E>(m_storage); }
 
-        explicit operator bool() const { return !std::holds_alternative<E>(m_storage); }
+        explicit operator bool() const noexcept { return !std::holds_alternative<E>(m_storage); }
 
     private:
         template <typename U, typename V>
-        friend Result<U, V> Ok(const U &value);
+        friend Result<U, V> Ok(const U value) noexcept;
 
         template <typename U, typename V>
-        friend Result<U, V> Ok(U &&value);
+        friend Result<U, V> Err(V error) noexcept;
 
-        template <typename V>
-        friend Result<None, V> Ok();
-
-        template <typename U, typename V>
-        friend Result<U, V> Error(const V &error);
-
-        template <typename U, typename V>
-        friend Result<U, V> Error(V &&error);
-
-        Result(const T &value) : m_storage(value) {}
-        Result(T &&value) : m_storage(std::move(value)) {}
-        Result(const E &error) : m_storage(error) {}
-        Result(E &&error) : m_storage(std::move(error)) {}
-        Result(None &) {}
+        explicit Result(T &&value) : m_storage{std::move(value)} {}
+        explicit Result(E &&error) : m_storage{std::move(error)} {}
+        explicit Result(None &) {}
 
         std::variant<T, E> m_storage;
     };
 
     template <typename T, typename E>
-    Result<T, E> Ok(const T &value)
+    Result<T, E> Ok(T value) noexcept
     {
-        return Result<T, E>(value);
+        return Result<T, E>{std::move(value)};
     }
 
     template <typename T, typename E>
-    Result<T, E> Ok(T &&value)
+    Result<T, E> Err(E error) noexcept
     {
-        return Result<T, E>(std::move(value));
-    }
-
-    template <typename E>
-    Result<None, E> Ok()
-    {
-        return Result<None, E>(None{});
-    }
-
-    template <typename T, typename E>
-    Result<T, E> Error(const E &error)
-    {
-        return Result<T, E>(error);
-    }
-
-    template <typename T, typename E>
-    Result<T, E> Error(E &&error)
-    {
-        return Result<T, E>(std::move(error));
+        return Result<T, E>{std::move(error)};
     }
 }
