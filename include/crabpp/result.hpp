@@ -25,16 +25,15 @@ namespace crabpp
 
         template <typename U, typename V>
         friend Result<U, V> Err(V error) noexcept;
-
+    public:
         explicit Result(T &&value) : m_storage{std::move(value)} {}
         explicit Result(E &&error) : m_storage{std::move(error)} {}
-        explicit Result(None &) {}
 
         std::variant<T, E> m_storage;
     };
 
     template <typename T, typename E>
-    Result<T, E> Ok(T value) noexcept
+    Result<T, E> Ok(T&& value) noexcept
     {
         return Result<T, E>{std::move(value)};
     }

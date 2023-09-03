@@ -1,5 +1,4 @@
 #include <crabpp/result.hpp>
-
 #include <iostream>
 #include <stdexcept>
 #include <chrono>
@@ -12,19 +11,19 @@ enum class ErrorCode
     WRONG_VALUE
 };
 
-auto only_one__result(const int value) -> Result<int, ErrorCode>
+auto only_one__result(std::string value) -> Result<std::string, ErrorCode>
 {
-    if (value != 1)
+    if (value != "dupa")
     {
-        return Err<int, ErrorCode>(ErrorCode::WRONG_VALUE);
+        return Err<std::string, ErrorCode>(ErrorCode::WRONG_VALUE);
     }
-    return Ok<int, ErrorCode>(1);
+    return Ok<std::string, ErrorCode>(std::move(value));
 }
 
 
-auto only_one__except(const int value) -> int
+auto only_one__except(std::string value) -> int
 {
-    if (value != 1)
+    if (value != "dupa")
     {
         throw std::runtime_error("WRONG VALUE");
     }
@@ -41,27 +40,24 @@ auto measure_execution_time(Func func) -> std::chrono::microseconds {
 
 int main()
 {
-    constexpr int testValue = 2;
+    std::string testValue = "dupak";
 
-    // Measure execution time using Result
-    auto resultTime = measure_execution_time([&]() {
-        auto result = only_one__result(testValue);
-        if (!result) {
-            std::cerr << "Result: WRONG VALUE\n";
-        }
-    });
-
-    // Measure execution time using Exception
     auto exceptTime = measure_execution_time([&]() {
         try {
             auto result = only_one__except(testValue);
-            std::cout << "Exception: " << result << '\n';
         } catch (const std::exception& e) {
-            std::cerr << "Exception: " << e.what() << '\n';
+            std::cerr << "Exception: " << e.what() << std::endl;
+        }
+    });
+    
+    auto resultTime = measure_execution_time([&]() {
+        auto result = only_one__result(testValue);
+        if (!result) {
+            std::cerr << "Result: WRONG VALUE" << std::endl;
         }
     });
 
-    // Output execution times
+
     std::cout << "Result execution time: " << resultTime.count() << " microseconds\n";
     std::cout << "Exception execution time: " << exceptTime.count() << " microseconds\n";
 }
