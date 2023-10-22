@@ -9,17 +9,22 @@ It's an amateur library with useful systems from Rust lang.
 Before bulding make sure that you have C++17 compiler.
 '''
 git clone https://github.com/patrykstruzek/CrabPP
+
 cd CrabPP
+
 mkdir build
+
 cd build
+
 cmake ..
+
 cmake --build .
-'''
 
 ## Examples
 
 ### Result
 '''cpp
+
 enum ErrorCode {
     SomeError
 };
@@ -39,7 +44,6 @@ std::cerr << "Some error occured!";
 } else {
 std::cout << result.value();
 }
-'''
 
 ### match
 '''cpp
@@ -50,7 +54,6 @@ int result = match<std::string, int>(input)
                     .with("not_some_text", []() { return 1; })
                     .with("some_other_text", []() { return 2; })
                     .rest([]() { return NULL; });
-'''
 
 ## Simple docs
 - ### Result<T, E>
