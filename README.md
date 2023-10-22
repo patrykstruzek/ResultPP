@@ -2,4 +2,4 @@
 ![Build Status](https://img.shields.io/badge/build-passing-green.svg)
 
 # CrabPP
-It's a library with useful systems from Rust lang.
+It's an amateur library with useful systems from Rust lang.
