@@ -6,7 +6,7 @@ It's an amateur library with useful systems from Rust lang.
 
 ## Usage
 
-Before bulding make sure that you have C++17 compiler.
+Before bulding make sure that you have C++17 compiler or higher.
 ```
 git clone https://github.com/patrykstruzek/CrabPP
 cd CrabPP
@@ -15,6 +15,12 @@ cd build
 cmake ..
 cmake --build .
 ```
+then add to your CMakeLists.txt project
+```
+add_subdirectory(path_to_CrabPP)
+target_link_libraries(your_target CrabPP::CrabPP)
+```
+or just add it through git submodule.
 
 ## Examples
 
@@ -63,3 +69,6 @@ int result = match<std::string, int>(input)
 - ### match<T, R>()
 - .with()
 - .rest()
+
+---
+Take into account that this library has no real tests, so it is not perfect.
