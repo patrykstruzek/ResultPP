@@ -4,15 +4,34 @@ project(CrabPP)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include_directories(${CMAKE_SOURCE_DIR})
-
 add_library(CrabPP INTERFACE)
 
-target_sources(CrabPP INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/crabpp/result.hpp>
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/crabpp/matcher.hpp>
+target_include_directories(CrabPP
+    INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:include>
 )
 
-add_library(CrabPP::CrabPP ALIAS CrabPP)
+install(TARGETS CrabPP
+    EXPORT CrabPPConfig
+)
 
-add_subdirectory(tests)
+install(DIRECTORY crabpp/
+    DESTINATION include/CrabPP
+    FILES_MATCHING PATTERN "*.hpp"
+)
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+    "${CMAKE_BINARY_DIR}/CrabPPConfigVersion.cmake"
+    VERSION 1.0
+    COMPATIBILITY AnyNewerVersion
+)
+
+export(EXPORT CrabPPConfig
+    FILE "${CMAKE_BINARY_DIR}/CrabPPTargets.cmake"
+)
+
+install(EXPORT CrabPPConfig
+    DESTINATION "cmake"
+)

@@ -6,7 +6,7 @@ It's an amateur library with useful systems from Rust lang.
 
 ## Usage
 
-Before bulding make sure that you have C++17 compiler or higher.
+Before building make sure that you have C++17 compiler or higher.
 ```
 git clone https://github.com/patrykstruzek/CrabPP
 cd CrabPP
@@ -59,16 +59,16 @@ int result = match<std::string, int>(input)
 ```
 
 ## Simple docs
-- ### Result<T, E>
-- .ok()
-- .value()
-- .unwrap()
-- .expect()
-- ### Ok<T, E>()
-- ### Err<T, E>()
-- ### match<T, R>()
-- .with()
-- .rest()
+- <strong>Result<T, E></strong> - main result class
+- .err() - returns an error 
+- .value() - returns a value
+- .unwrap() - returns a value if ok, if not ok throw exception
+- .expect() - if not ok throw exception with message in arguments
+- <strong>Ok<T, E>()</strong> - returns an ok value
+- <strong>Err<T, E>()</strong> - returns an error
+- <strong>match<T, R>()</strong> - main match func
+- .with() - compare with value from match arguments and return value
+- .rest() - checks the rest cases and return a value
 
 ---
 Take into account that this library has no real tests, so it is not perfect.
