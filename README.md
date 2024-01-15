@@ -4,24 +4,6 @@
 # CrabPP
 It's an amateur library with useful systems from Rust lang.
 
-## Usage
-
-Before building make sure that you have C++17 compiler or higher.
-```
-git clone https://github.com/patrykstruzek/CrabPP
-cd CrabPP
-mkdir build
-cd build
-cmake ..
-cmake --build .
-```
-then add to your CMakeLists.txt project
-```
-add_subdirectory(path_to_CrabPP)
-target_link_libraries(your_target CrabPP::CrabPP)
-```
-or just add it through git submodule.
-
 ## Examples
 
 ```cpp
