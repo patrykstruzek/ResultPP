@@ -29,19 +29,17 @@ enum ErrorCode {
     SomeError
 };
 
-auto greater_than_nine(int x) -> Result<std::string, ErrorCode> {
+auto greater_than_nine(int x) -> Result<std::string_view, ErrorCode> {
     if(x <= 9)
         return Err(ErrorCode::SomeError);
 
-    return Ok("The number is ok!");
+    return Ok(std::string_view("The number is ok!"));
 }
 
 auto result = foo(11);
-if(!result) {
+
+if(!result)
     std::cerr << "Some error occured!";
-} else {
-    std::cout << result.value();
-}
+else
+    std::cout << result.unwrap();
 ```
----
-Take into account that this library has no real tests, so it is not perfect.
