@@ -1,7 +1,7 @@
 ![Version](https://img.shields.io/badge/version-eternal_early_access-blue.svg)
 ![Build Status](https://img.shields.io/badge/build-passing-green.svg)
 
-# CrabPP
+# ResultPP
 It's an amateur library with useful systems from Rust lang.
 
 ## Examples
