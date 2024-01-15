@@ -2,7 +2,7 @@
 ![Build Status](https://img.shields.io/badge/build-passing-green.svg)
 
 # ResultPP
-It's an amateur library with useful systems from Rust lang.
+It's an amateur implementation of Result from Rust lang.
 
 ## Examples
 
